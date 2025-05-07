@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import Navbar from '../components/Navbar';
+import { API_URL } from '../config';
 
 export default function Signup() {
   const [credentials, setCredentials] = useState({ name: "", email: "", password: "", geolocation: "" });
@@ -24,7 +25,7 @@ export default function Signup() {
     let [lat, long] = latlong;
     console.log(lat, long);
 
-    const response = await fetch("http://localhost:5000/api/getlocation", {
+    const response = await fetch(`${API_URL}/api/getlocation`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -40,9 +41,8 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Use fetched geolocation or manual address as the location field
     const locationValue = credentials.geolocation || address;
-    const response = await fetch("http://localhost:5000/api/createuser", {
+    const response = await fetch(`${API_URL}/api/createuser`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

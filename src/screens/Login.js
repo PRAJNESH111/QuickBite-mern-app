@@ -1,21 +1,20 @@
 import React, { useState } from 'react'
 import Navbar from '../components/Navbar';
 import { useNavigate, Link } from 'react-router-dom'
+import { API_URL } from '../config';
+
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: "", password: "" })
   let navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:5000/api/login", {
-      // credentials: 'include',
-      // Origin:"http://localhost:3000/login",
+    const response = await fetch(`${API_URL}/api/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ email: credentials.email, password: credentials.password })
-
     });
     const json = await response.json()
     console.log(json);
