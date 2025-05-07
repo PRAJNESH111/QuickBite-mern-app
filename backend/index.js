@@ -6,9 +6,10 @@ const port = process.env.PORT || 5000;
 
 // Configure CORS
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' 
-        ? ['https://gofood-frontend-ro7x2462x-prajnesh111s-projects.vercel.app', 'http://localhost:3000']
-        : 'http://localhost:3000',
+    origin: [
+        'https://gofood-frontend-2v48v50dw-prajnesh111s-projects.vercel.app',
+        'http://localhost:3000'
+    ],
     credentials: true,
 };
 
