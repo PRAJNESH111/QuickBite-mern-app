@@ -1,6 +1,7 @@
 import React from 'react';
 import Delete from '@mui/icons-material/Delete';
 import { useCart, useDispatchCart } from '../components/ContextReducer';
+import { API_URL } from '../config';
 
 export default function Cart() {
   let data = useCart();
@@ -23,7 +24,7 @@ export default function Cart() {
         return; 
       }
 
-      let response = await fetch("http://localhost:5000/api/orderData", {
+      let response = await fetch(`${API_URL}/api/orderData`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
