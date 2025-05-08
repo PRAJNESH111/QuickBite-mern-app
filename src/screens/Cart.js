@@ -16,7 +16,6 @@ export default function Cart() {
   const handleCheckOut = async () => {
     try {
       let userEmail = localStorage.getItem("userEmail");
-
       
       if (!userEmail) {
         alert("User email not found. Please log in.");
@@ -24,24 +23,29 @@ export default function Cart() {
         return; 
       }
 
+      console.log('Making request to:', `${API_URL}/api/orderData`);
+      
       let response = await fetch(`${API_URL}/api/orderData`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
           order_data: data,
           email: userEmail,
           order_date: new Date().toDateString()
-        }),
-        credentials: 'include', 
+        })
       });
+
+      console.log('Response status:', response.status);
 
       if (response.ok) {
         dispatch({ type: "DROP" }); 
-        alert("Order Placed successful!");
+        alert("Order Placed successfully!");
       } else {
-        console.error(`Checkout failed with status: ${response.status} - ${response.statusText}`);
+        const errorText = await response.text();
+        console.error(`Checkout failed with status: ${response.status} - ${errorText}`);
         alert("Checkout failed. Please try again.");
       }
     } catch (error) {
@@ -50,7 +54,7 @@ export default function Cart() {
     }
   };
 
-  let totalPrice = data.reduce((total, food) => total + food.price * food.qty, 0); 
+  let totalPrice = data.reduce((total, food) => total + food.price * food.qty, 0);
 
   return (
     <div>

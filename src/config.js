@@ -1,9 +1,8 @@
 // API Configuration
-const API_URL = process.env.REACT_APP_API_URL || 'https://gofood-backend-1o90.onrender.com';
+const API_URL = 'https://gofood-backend-1o90.onrender.com';
 
 // Debug logging
-console.log('Environment API URL:', process.env.REACT_APP_API_URL);
-console.log('Final API URL:', API_URL);
+console.log('API URL:', API_URL);
 
 export { API_URL };
 
