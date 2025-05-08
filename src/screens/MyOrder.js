@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
+import { API_URL } from '../config';
 
 export default function MyOrder() {
 
@@ -8,9 +9,7 @@ export default function MyOrder() {
 
     const fetchMyOrder = async () => {
         console.log(localStorage.getItem('userEmail'))
-        await fetch("http://localhost:5000/api/myOrderData", {
-            // credentials: 'include',
-            // Origin:"http://localhost:3000/login",
+        await fetch(`${API_URL}/api/myOrderData`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -22,14 +21,6 @@ export default function MyOrder() {
             let response = await res.json()
             await setorderData(response)
         })
-
-
-
-        // await res.map((data)=>{
-        //    console.log(data)
-        // })
-
-
     }
 
     useEffect(() => {
@@ -61,7 +52,6 @@ export default function MyOrder() {
 
                                                         <div className='col-12 col-md-6 col-lg-3' >
                                                             <div className="card mt-3" style={{ width: "16rem", maxHeight: "360px" }}>
-                                                                {/* <img src={arrayData.img} className="card-img-top" alt="..." style={{ height: "120px", objectFit: "fill" }} /> */}
                                                                 <div className="card-body">
                                                                     <h5 className="card-title">{arrayData.name}</h5>
                                                                     <div className='container w-100 p-0' style={{ height: "38px" }}>
