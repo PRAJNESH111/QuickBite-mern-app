@@ -1,147 +1,73 @@
-// const express = require('express')
-// const Order = require('../models/Orders')
-// const router = express.Router()
-
-
-// router.post('/orderData', async (req, res) => {
-//     let data = req.body.order_data
-//     await data.splice(0,0,{Order_date:req.body.order_date})
-//     console.log("1231242343242354",req.body.email)
-
-//     //if email not exisitng in db then create: else: InsertMany()
-//     let eId = await Order.findOne({ 'email': req.body.email })    
-//     console.log(eId)
-//     if (eId===null) {
-//         try {
-//             console.log(data)
-//             console.log("1231242343242354",req.body.email)
-//             await Order.create({
-//                 email: req.body.email,
-//                 order_data:[data]
-//             }).then(() => {
-//                 res.json({ success: true })
-//             })
-//         } catch (error) {
-//             console.log(error.message)
-//             res.send("Server Error", error.message)
-
-//         }
-//     }
-
-//     else {
-//         try {
-//             await Order.findOneAndUpdate({email:req.body.email},
-//                 { $push:{order_data: data} }).then(() => {
-//                     res.json({ success: true })
-//                 })
-//         } catch (error) {
-//             console.log(error.message)
-//             res.send("Server Error", error.message)
-//         }
-//     }
-// })
-
-// router.post('/myOrderData', async (req, res) => {
-//     try {
-//         console.log(req.body.email)
-//         let eId = await Order.findOne({ 'email': req.body.email })
-//         //console.log(eId)
-//         res.json({orderData:eId})
-//     } catch (error) {
-//         res.send("Error",error.message)
-//     }
-    
-
-// });
-
-// module.exports = router
-
-
-// const express = require('express');
-// const Order = require('../models/Orders');
-// const router = express.Router();
-
-// router.post('/orderData', async (req, res) => {
-//     let data = req.body.order_data;
-//     await data.splice(0, 0, { Order_date: req.body.order_date });
-    
-//     try {
-//         let eId = await Order.findOne({ 'email': req.body.email });
-        
-//         if (!eId) {
-//             await Order.create({
-//                 email: req.body.email,
-//                 order_data: [data]
-//             });
-//         } else {
-//             await Order.findOneAndUpdate(
-//                 { email: req.body.email },
-//                 { $push: { order_data: data } }
-//             );
-//         }
-
-//         res.json({ success: true });
-//     } catch (error) {
-//         console.error(error.message);
-//         res.status(500).json({ error: error.message });
-//     }
-// })
-
-// router.post('/myOrderData', async (req, res) => {
-//     try {
-//         let eId = await Order.findOne({ 'email': req.body.email });
-//         res.json({ orderData: eId });
-//     } catch (error) {
-//         res.status(500).json({ error: error.message });
-//     }
-// });
-
-// module.exports = router;
 const express = require('express');
 const Order = require('../models/Orders');
 const router = express.Router();
+const { sendOrderConfirmationEmail } = require('../config/emailConfig');
 
 router.post('/orderData', async (req, res) => {
-    let data = req.body.order_data;
-
-    // Add the order date at the beginning of the order_data array
-    data.splice(0, 0, { Order_date: req.body.order_date });
-    
     try {
-        let eId = await Order.findOne({ 'email': req.body.email });
-        
-        if (!eId) {
-            // If the user is not found, create a new order record
+        const { order_data, email, order_date } = req.body;
+
+        console.log('Received order request:', {
+            email,
+            orderDate: order_date,
+            itemsCount: order_data.length
+        });
+
+        const orderArr = [{ Order_date: order_date }, ...order_data];
+
+        const orderDetails = {
+            orderId: Date.now().toString(),
+            totalAmount: order_data.reduce((total, item) => total + (item.price * item.qty), 0),
+            items: order_data.map(item => ({
+                name: item.name,
+                quantity: item.qty,
+                price: item.price
+            }))
+        };
+
+        const emailSent = await sendOrderConfirmationEmail(email, orderDetails);
+
+        if (!emailSent) {
+            console.error('Failed to send order confirmation email to:', email);
+        } else {
+            console.log('Order confirmation email sent to:', email);
+        }
+
+        // ✅ Save to DB using Mongoose model
+        let existingOrder = await Order.findOne({ email });
+
+        if (!existingOrder) {
             await Order.create({
-                email: req.body.email,
-                order_data: [data]
+                email,
+                orders: [orderArr]
             });
         } else {
-            // If the user is found, update the existing order record
-            await Order.findOneAndUpdate(
-                { email: req.body.email },
-                { $push: { order_data: data } }
-            );
+            existingOrder.orders.push(orderArr);
+            await existingOrder.save();
         }
 
         res.json({ success: true });
     } catch (error) {
-        console.error("Error in /orderData route:", error.message);
-        res.status(500).json({ error: error.message });
+        console.error('Error in orderData route:', {
+            message: error.message,
+            stack: error.stack
+        });
+        res.status(500).json({ success: false, error: 'Internal server error' });
     }
 });
 
 router.post('/myOrderData', async (req, res) => {
     try {
-        let eId = await Order.findOne({ 'email': req.body.email });
-
-        if (!eId) {
-            return res.status(404).json({ error: "No orders found for this email." });
+        const userOrders = await Order.findOne({ email: req.body.email });
+        let orders = userOrders?.orders;
+        if (!orders && userOrders?.order_data) {
+            orders = userOrders.order_data;
         }
-
-        res.json({ orderData: eId });
+        if (!orders) {
+            return res.status(200).json({ orderData: { orders: [] } });
+        }
+        res.json({ orderData: { orders } });
     } catch (error) {
-        console.error("Error in /myOrderData route:", error.message);
         res.status(500).json({ error: error.message });
     }
 });

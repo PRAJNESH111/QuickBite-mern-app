@@ -2,6 +2,7 @@ import React from 'react';
 import Delete from '@mui/icons-material/Delete';
 import { useCart, useDispatchCart } from '../components/ContextReducer';
 import { API_URL } from '../config';
+import { sendOrderConfirmationEmail } from '../config/emailjs';
 
 export default function Cart() {
   let data = useCart();
@@ -23,7 +24,35 @@ export default function Cart() {
         return; 
       }
 
-      console.log('Making request to:', `${API_URL}/api/orderData`);
+      console.log('Starting checkout process...');
+      console.log('Cart data:', data);
+      console.log('User email:', userEmail);
+      
+      const orderData = {
+        order_data: data,
+        email: userEmail,
+        order_date: new Date().toDateString()
+      };
+
+      // Prepare order details for email
+      const orderDetails = {
+        orderId: Date.now().toString(),
+        totalAmount: data.reduce((total, item) => total + (item.price * item.qty), 0),
+        items: data.map(item => ({
+          name: item.name,
+          quantity: item.qty,
+          price: item.price
+        }))
+      };
+
+      // Send order confirmation email using EmailJS
+      const emailSent = await sendOrderConfirmationEmail(userEmail, orderDetails);
+      
+      if (!emailSent) {
+        console.error('Failed to send order confirmation email');
+      }
+
+      console.log('Sending order data:', orderData);
       
       let response = await fetch(`${API_URL}/api/orderData`, {
         method: 'POST',
@@ -31,21 +60,19 @@ export default function Cart() {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          order_data: data,
-          email: userEmail,
-          order_date: new Date().toDateString()
-        })
+        body: JSON.stringify(orderData)
       });
 
       console.log('Response status:', response.status);
+      const responseData = await response.json();
+      console.log('Response data:', responseData);
 
       if (response.ok) {
         dispatch({ type: "DROP" }); 
         alert("Order Placed successfully!");
       } else {
-        const errorText = await response.text();
-        console.error(`Checkout failed with status: ${response.status} - ${errorText}`);
+        console.error(`Checkout failed with status: ${response.status}`);
+        console.error('Response data:', responseData);
         alert("Checkout failed. Please try again.");
       }
     } catch (error) {

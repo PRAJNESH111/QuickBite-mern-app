@@ -1,125 +1,181 @@
-import React, { useEffect, useState } from 'react'
-import Footer from '../components/Footer';
-import Navbar from '../components/Navbar';
-import { API_URL } from '../config';
+import React, { useEffect, useState } from "react";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
+import { API_URL } from "../config";
+
+const PLACEHOLDER_IMG = "/placeholder.png";
 
 export default function MyOrder() {
-    const [orderData, setorderData] = useState({})
-    const [error, setError] = useState(null)
-    const [loading, setLoading] = useState(true)
+  const [orderData, setorderData] = useState({});
+  const [error, setError] = useState("No Order Found in this Account ");
+  const [loading, setLoading] = useState(true);
 
-    const fetchMyOrder = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            
-            const userEmail = localStorage.getItem('userEmail');
-            if (!userEmail) {
-                throw new Error('User email not found. Please log in.');
-            }
+  const fetchMyOrder = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-            console.log('Making request to:', `${API_URL}/api/myOrderData`);
-            console.log('With email:', userEmail);
-            
-            const response = await fetch(`${API_URL}/api/myOrderData`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: userEmail
-                })
-            });
+      const userEmail = localStorage.getItem("userEmail");
+      if (!userEmail) {
+        throw new Error("User email not found. Please log in.");
+      }
 
-            console.log('Response status:', response.status);
-            console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      const response = await fetch(`${API_URL}/api/myOrderData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email: userEmail }),
+      });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-            }
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `HTTP error! status: ${response.status}, message: ${errorText}`
+        );
+      }
 
-            const data = await response.json();
-            console.log('Order Data:', data);
-            setorderData(data);
-        } catch (err) {
-            console.error('Error fetching orders:', err);
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+      const data = await response.json();
+      console.log("Fetched order data:", data);
+      setorderData(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    useEffect(() => {
-        fetchMyOrder();
-    }, []);
+  useEffect(() => {
+    fetchMyOrder();
+  }, []);
 
-    return (
-        <div>
-            <div>
-                <Navbar />
+  const renderOrderCards = () => {
+    const orders =
+      orderData?.orderData?.orders || orderData?.orderData?.order_data || [];
+    if (!orders.length) return null;
+
+    console.log("Rendering orders:", orders);
+
+    return orders
+      .filter(
+        (orderArr) =>
+          Array.isArray(orderArr) &&
+          orderArr.length > 0 &&
+          typeof orderArr[0] === "object" &&
+          orderArr[0] !== null &&
+          typeof orderArr[0].Order_date === "string" &&
+          orderArr[0].Order_date.trim() !== ""
+      )
+      .slice()
+      .reverse()
+      .map((orderArr, idx) => {
+        const orderDate = orderArr[0].Order_date || "Unknown Date";
+        const total = orderArr.reduce(
+          (sum, item) => sum + (item.price || 0),
+          0
+        );
+
+        return (
+          <div
+            className="card mb-4 shadow-lg border-0 rounded-4 w-100"
+            key={orderDate + idx}
+            style={{ maxWidth: "700px", margin: "0 auto" }}
+          >
+            <div className="card-header bg-success text-white d-flex justify-content-between align-items-center rounded-top-4">
+              <span>
+                Order Date: <b>{orderDate}</b>
+              </span>
+              <span className="badge bg-primary">Delivered</span>
             </div>
-
-            <div className='container'>
-                {loading && (
-                    <div className="alert alert-info mt-3" role="alert">
-                        Loading orders...
+            <div className="card-body">
+              {orderArr.slice(1).map((item, i) => (
+                <div
+                  className="d-flex align-items-center mb-3 pb-3 border-bottom"
+                  key={i}
+                >
+                  <img
+                    src={
+                      item.img && item.img.trim() !== ""
+                        ? item.img
+                        : PLACEHOLDER_IMG
+                    }
+                    alt={item.name}
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      objectFit: "cover",
+                      borderRadius: "12px",
+                      background: "#eee",
+                      marginRight: 20,
+                    }}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = PLACEHOLDER_IMG;
+                    }}
+                  />
+                  <div className="flex-grow-1">
+                    <div className="fw-bold fs-5 mb-1">{item.name}</div>
+                    <div>
+                      <span className="badge bg-secondary me-2">
+                        Qty: {item.qty}
+                      </span>
+                      {item.size && (
+                        <span className="badge bg-light text-dark me-2">
+                          Size: {item.size}
+                        </span>
+                      )}
+                      <span className="badge bg-success">₹{item.price}</span>
                     </div>
-                )}
-                
-                {error && (
-                    <div className="alert alert-danger mt-3" role="alert">
-                        Error loading orders: {error}
-                    </div>
-                )}
-                
-                {!loading && !error && Object.keys(orderData).length === 0 && (
-                    <div className="alert alert-info mt-3" role="alert">
-                        No orders found.
-                    </div>
-                )}
-                
-                <div className='row'>
-                    {orderData !== 0 ? Array(orderData).map(data => {
-                        return (
-                            data.orderData ?
-                                data.orderData.order_data.slice(0).reverse().map((item) => {
-                                    return (
-                                        item.map((arrayData) => {
-                                            return (
-                                                <div key={arrayData._id || Math.random()}>
-                                                    {arrayData.Order_date ? <div className='m-auto mt-5'>
-                                                        {data = arrayData.Order_date}
-                                                        <hr />
-                                                    </div> :
-                                                        <div className='col-12 col-md-6 col-lg-3'>
-                                                            <div className="card mt-3" style={{ width: "16rem", maxHeight: "360px" }}>
-                                                                <div className="card-body">
-                                                                    <h5 className="card-title">{arrayData.name}</h5>
-                                                                    <div className='container w-100 p-0' style={{ height: "38px" }}>
-                                                                        <span className='m-1'>{arrayData.qty}</span>
-                                                                        <span className='m-1'>{arrayData.size}</span>
-                                                                        <span className='m-1'>{data}</span>
-                                                                        <div className=' d-inline ms-2 h-100 w-20 fs-5'>
-                                                                            ₹{arrayData.price}/-
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                </div>
-                                            )
-                                        })
-                                    )
-                                }) : ""
-                        )
-                    }) : ""}
+                  </div>
                 </div>
+              ))}
+              <div className="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                <span className="fw-bold">Total</span>
+                <span className="fs-5 text-success fw-bold">₹{total}</span>
+              </div>
             </div>
+          </div>
+        );
+      });
+  };
 
-            <Footer />
-        </div>
-    )
+  return (
+    <div>
+      <Navbar />
+
+      <div className="container py-4">
+        <h2 className="mb-4 text-center fw-bold">My Orders</h2>
+
+        {loading && (
+          <div className="alert alert-info mt-3" role="alert">
+            Loading orders...
+          </div>
+        )}
+
+        {error && (
+          <div className="alert alert-danger mt-3" role="alert">
+            Error loading orders: {error}
+          </div>
+        )}
+
+        {!loading &&
+          !error &&
+          !(
+            (orderData?.orderData?.orders &&
+              orderData.orderData.orders.length) ||
+            (orderData?.orderData?.order_data &&
+              orderData.orderData.order_data.length)
+          ) && (
+            <div className="alert alert-info mt-3" role="alert">
+              No orders found.
+            </div>
+          )}
+
+        <div className="d-flex flex-column gap-3">{renderOrderCards()}</div>
+      </div>
+
+      <Footer />
+    </div>
+  );
 }

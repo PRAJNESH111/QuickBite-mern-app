@@ -1,8 +1,21 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+
+// Check environment variables on startup
+console.log('Checking environment variables...');
+console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'is set' : 'is not set');
+console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'is set' : 'is not set');
+
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error('WARNING: Email configuration is missing!');
+    console.error('Please make sure you have created a .env file with EMAIL_USER and EMAIL_PASS');
+} else {
+    console.log('Email configuration is present');
+}
 
 // Configure CORS
 const corsOptions = {
@@ -36,11 +49,12 @@ app.get('/', (req, res) => {
 
 app.use('/api', require('./Routes/CreateUser'));
 app.use('/api', require('./Routes/DisplayData'));
-app.use('/api', require('./Routes/OrderData')); // Corrected route path
+app.use('/api', require('./Routes/OrderData'));
+app.use('/api', require('./Routes/emailRoutes'));
 
 // Start the server
 app.listen(port, () => {
-    console.log(`Example app listening on http://localhost:${port}`);
+    console.log(`Server started on http://localhost:${port}`);
 });
 
 

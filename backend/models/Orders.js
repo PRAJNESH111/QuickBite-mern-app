@@ -8,11 +8,10 @@ const OrderSchema = new Schema({
         required: true,
         unique: true
     },
-    order_data: {
+    orders: {
         type: Array,
         required: true,
     },
-
 });
 
 module.exports = mongoose.model('order', OrderSchema)
