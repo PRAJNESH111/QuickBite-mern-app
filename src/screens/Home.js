@@ -22,6 +22,7 @@ export default function Home() {
         throw new Error("Network response was not ok");
       }
       let data = await response.json();
+
       setFoodItems(data[0] || []);
       setFoodCat(data[1] || []);
     } catch (error) {
@@ -36,13 +37,15 @@ export default function Home() {
   return (
     <div>
       <Navbar />
-      <div className="w-100 pt-10">
+      <div className="w-100 pt-10" key={crypto.randomUUID()}>
         <Carousel onSearch={setSearch} />
-        <div className="container">
+        <div className="container" key={crypto.randomUUID()}>
           {foodCat.length > 0 ? (
             foodCat.map((data) => (
-              <div className="row mb-3" key={data.id}>
-                <div className="fs-3 m-3">{data.CategoryName}</div>
+              <div className="row mb-3" key={crypto.randomUUID()}>
+                <div className="fs-3 m-3" key={crypto.randomUUID()}>
+                  {data.CategoryName}
+                </div>
                 <hr
                   id="hr-success"
                   style={{
@@ -68,6 +71,7 @@ export default function Home() {
                           item={filterItems}
                           options={filterItems.options[0]}
                           ImgSrc={filterItems.img}
+                          key={crypto.randomUUID()}
                         />
                       </div>
                     ))
