@@ -37,42 +37,59 @@
   }
 }
 
-.card-hover{
-  flex-wrap: wrap;;
-  border-radius:15px;
+.card-hover {
+  flex-wrap: wrap;
+  border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.319);
   padding: 10px;
   padding-bottom: 20px;
-  width:300px;
-  height:fit-content;
-  
+  width: 300px;
+  height: fit-content;
+
   align-items: center;
   justify-content: center;
   background-color: #ffffff;
 }
-.card-hover:hover{
-  transition:ease-in-out 0.3s; 
+.card-hover:hover {
+  transition: ease-in-out 0.3s;
   transform: scale(1.1);
-
-
-
-
 }
-.bap{
+.bap {
   padding-left: 15px;
   flex-wrap: wrap;
   color: black;
 }
-.hai{
+.hai {
   flex-wrap: wrap;
   padding-left: 15px;
- 
 }
-*{
-  font-family: 'Poppins', sans-serif;
-  
+* {
+  font-family: "Poppins", sans-serif;
 }
 
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
 
+.shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150px;
+  height: 100%;
+  width: 150px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
 
-
+@keyframes shimmer {
+  100% {
+    transform: translateX(300px);
+  }
+}

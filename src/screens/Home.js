@@ -12,16 +12,12 @@ export default function Home() {
 
   const loadFoodItems = async () => {
     try {
-      let response = await fetch(
-        "https://gofood-backend-1o90.onrender.com/api/foodData",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
+      let response = await fetch(`${API_URL}/api/foodData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
