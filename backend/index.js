@@ -26,7 +26,7 @@ const corsOptions = {
     "https://gofood-frontend-jju7t7qtq-prajnesh111s-projects.vercel.app",
     "https://gofood-frontend-2v48v50dw-prajnesh111s-projects.vercel.app",
     "https://gofood-frontend-ml7v22am0-prajnesh111s-projects.vercel.app",
-    "https://gofood-frontend-two.vercel.app/",
+    "https://gofood-frontend-two.vercel.app",
     "http://localhost:3000",
   ],
   credentials: true,
