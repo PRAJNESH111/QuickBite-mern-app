@@ -37,15 +37,6 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-// routes
-app.use("/api/foodData", require("./routes/foodData"));
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
-});
-
-app.use(express.json());
-
 // Assuming your db connection and global variables are set here
 global.foodData = require("./db")(function call(err, data, CatData) {
   if (err) console.log(err);
