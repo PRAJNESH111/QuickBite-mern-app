@@ -35,17 +35,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      /\.vercel\.app$/, // allow all Vercel preview domains
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
-
 app.use(express.json());
 
 // routes
