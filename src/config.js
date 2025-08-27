@@ -1,6 +1,6 @@
 // API Configuration
 const API_URL =
-  "http://localhost:5000" || "https://gofood-backend-1o90.onrender.com ";
+  "http://localhost:5000" || "https://gofood-backend-1o90.onrender.com";
 
 // Debug logging
 // console.log("API URL:", API_URL);
