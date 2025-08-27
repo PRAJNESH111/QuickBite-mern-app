@@ -22,7 +22,7 @@ export default function Home() {
         throw new Error("Network response was not ok");
       }
       let data = await response.json();
-      console.log(data);
+      // console.log(data);
 
       setFoodItems(data[0] || []);
       setFoodCat(data[1] || []);
