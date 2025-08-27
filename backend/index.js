@@ -28,7 +28,7 @@ const corsOptions = {
     "https://gofood-frontend-ml7v22am0-prajnesh111s-projects.vercel.app",
     "https://gofood-frontend-two.vercel.app",
     "http://localhost:3000",
-    "https://gofood-frontend-bvxi634mi-prajnesh111s-projects.vercel.app/",
+    "https://gofood-frontend-bvxi634mi-prajnesh111s-projects.vercel.app",
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
