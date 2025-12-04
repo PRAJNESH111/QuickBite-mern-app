@@ -11,7 +11,7 @@ console.log("EMAIL_USER:", process.env.EMAIL_USER ? "is set" : "is not set");
 console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "is set" : "is not set");
 
 if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-  console.error("WARNING: Email configuration is missing!");
+  console.error("WARNING: Email <configura></configura>tion is missing!");
   console.error(
     "Please make sure you have created a .env file with EMAIL_USER and EMAIL_PASS"
   );
@@ -39,11 +39,11 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-// Assuming your db connection and global variables are set here
-global.foodData = require("./db")(function call(err, data, CatData) {
-  if (err) console.log(err);
-  global.foodData = data;
-  global.foodCategory = CatData;
+// Connect to MongoDB and preload food data globals
+const connectMongoDB = require("./db");
+connectMongoDB().catch((err) => {
+  console.error("Failed to connect MongoDB on startup:", err);
+  process.exit(1);
 });
 
 // Define your routes

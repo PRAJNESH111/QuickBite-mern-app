@@ -37,9 +37,7 @@
 
 const mongoose = require("mongoose");
 
-const mongoURI =
-  "mongodb+srv://gofood:Prajnesh%402001@cluster0.reyts.mongodb.net/gofoodmern?ssl=true&replicaSet=atlas-zud2s3-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0";
-
+const mongoURI = process.env.MONGO_URI;
 const connectMongoDB = async () => {
   try {
     await mongoose.connect(mongoURI, {
@@ -57,6 +55,17 @@ const connectMongoDB = async () => {
 
 const fetchData = async () => {
   try {
+    // Drop the old unique email index if it exists
+    try {
+      await mongoose.connection.db.collection("orders").dropIndex("email_1");
+      console.log("✅ Dropped old email_1 unique index from orders collection");
+    } catch (indexErr) {
+      // Index might not exist, which is fine
+      if (!indexErr.message.includes("index not found")) {
+        console.warn("Note:", indexErr.message);
+      }
+    }
+
     const fetched_data = await mongoose.connection.db
       .collection("foodData2")
       .find({})
