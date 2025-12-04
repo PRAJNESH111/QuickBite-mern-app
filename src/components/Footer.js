@@ -1,22 +1,30 @@
-import React from 'react'
+import React from "react";
 
 export default function Footer() {
   return (
-    <div><div className="container">
-    <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-      <div className="col-md-4 d-flex align-items-center">
-        <a href="/" className="mb-3 me-2 mb-md-0 text-muted text-decoration-none lh-1">
-        </a>
-        <span className="text-muted ">© 2025 <i>QuickBite</i>, Inc</span>
-      </div>
-  
-      <ul className="nav col-md-4 justify-content-end list-unstyled d-flex">
-        <li className="ms-3"><a className="text-muted" href="/"><svg className="bi" width="24" height="24"><use ></use></svg></a></li>
-        <li className="ms-3"><a className="text-muted" href="/"><svg className="bi" width="24" height="24"><use ></use></svg></a></li>
-        <li className="ms-3"><a className="text-muted" href="/"><svg className="bi" width="24" height="24"><use></use></svg></a></li>
-      </ul>
-    </footer>
-  </div>
-  </div>
-  )
+    <div className="container">
+      <footer
+        className="d-flex flex-wrap justify-content-between align-items-center py-4 my-4"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(203,32,45,0.12), rgba(244,49,87,0.2))",
+          borderRadius: "24px",
+          padding: "1.5rem 2rem",
+        }}
+      >
+        <div className="col-md-6">
+          <h5 className="fw-bold text-danger mb-1">QuickBite</h5>
+          <span className="text-muted">
+            © 2025 inspired by Zomato aesthetics
+          </span>
+        </div>
+
+        <div className="d-flex gap-2">
+          <span className="badge-zomato px-3 py-2">Delivery</span>
+          <span className="badge-zomato px-3 py-2">Dining</span>
+          <span className="badge-zomato px-3 py-2">Nightlife</span>
+        </div>
+      </footer>
+    </div>
+  );
 }

@@ -1,95 +1,80 @@
-.App {
-  text-align: center;
+.hero-search {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  /* backdrop-filter: blur(8px); */
+  box-shadow: 0 10px 45px rgba(0, 0, 0, 0.15);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.food-card {
+  background-color: #fff;
+  border-radius: 24px;
+  padding: 1rem;
+  border: 1px solid rgba(203, 32, 45, 0.12);
+  box-shadow: 0 25px 55px rgba(43, 16, 22, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.food-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 35px 70px rgba(43, 16, 22, 0.15);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.food-card .card-title {
+  font-weight: 600;
+  color: #351517;
 }
 
-.App-link {
-  color: #61dafb;
+.food-card .price-tag {
+  color: var(--z-red);
+  font-weight: 700;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.card-hover {
-  flex-wrap: wrap;
-  border-radius: 15px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.319);
-  padding: 10px;
-  padding-bottom: 20px;
-  width: 300px;
-  height: fit-content;
-
-  align-items: center;
-  justify-content: center;
-  background-color: #ffffff;
-}
-.card-hover:hover {
-  transition: ease-in-out 0.3s;
-  transform: scale(1.1);
-}
-.bap {
-  padding-left: 15px;
-  flex-wrap: wrap;
-  color: black;
-}
-.hai {
-  flex-wrap: wrap;
-  padding-left: 15px;
-}
-* {
-  font-family: "Poppins", sans-serif;
-}
-
-.shimmer {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -150px;
-  height: 100%;
-  width: 150px;
+.z-nav {
   background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0) 100%
+    120deg,
+    rgba(203, 32, 45, 0.95),
+    rgba(244, 49, 87, 0.95)
   );
-  animation: shimmer 1.5s infinite;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes shimmer {
-  100% {
-    transform: translateX(300px);
-  }
+.category-pill {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  border-radius: 999px;
+  background-color: rgba(203, 32, 45, 0.08);
+  color: var(--z-red);
+  font-weight: 600;
+}
+
+.order-card {
+  border: 1px solid rgba(203, 32, 45, 0.1);
+  border-radius: 22px;
+  box-shadow: 0 30px 60px rgba(44, 9, 14, 0.08);
+}
+
+.order-card .card-header {
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+}
+
+.order-card .card-body img {
+  border: 4px solid rgba(203, 32, 45, 0.08);
+}
+
+.modal-close-btn {
+  background: rgba(203, 32, 45, 0.15);
+  color: #fff;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  border: none;
+  font-weight: 700;
+}
+
+.modal-close-btn:hover {
+  background: var(--z-red);
 }

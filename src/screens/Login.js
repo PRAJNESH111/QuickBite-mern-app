@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate, Link } from "react-router-dom";
 import { API_URL } from "../config";
-import { sendLoginConfirmationEmail } from "../config/emailjs";
 import { Eye, EyeOff } from "lucide-react";
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
@@ -29,12 +28,6 @@ export default function Login() {
         localStorage.setItem("userEmail", credentials.email);
         localStorage.setItem("token", json.authToken);
 
-        // Send login confirmation email
-        const emailSent = await sendLoginConfirmationEmail(credentials.email);
-        if (!emailSent) {
-          console.error("Failed to send login confirmation email");
-        }
-
         navigate("/");
       } else {
         alert("Enter Valid Credentials");
@@ -52,10 +45,10 @@ export default function Login() {
   return (
     <div
       style={{
-        backgroundImage:
-          'url("https://images.pexels.com/photos/326278/pexels-photo-326278.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")',
-        height: "100vh",
-        backgroundSize: "cover",
+        minHeight: "100vh",
+        background:
+          "linear-gradient(135deg, #320404 0%, #cb202d 45%, #f43157 100%)",
+        color: "#fff",
       }}
     >
       <div className="pb-3">
@@ -63,8 +56,13 @@ export default function Login() {
       </div>
       <div className="container pt-4">
         <form
-          className="w-50 m-auto mt-5 border bg-dark border-success rounded"
+          className="w-50 m-auto mt-5 shadow-soft"
           onSubmit={handleSubmit}
+          style={{
+            backgroundColor: "rgba(255,255,255,0.95)",
+            borderRadius: "24px",
+            padding: "2rem",
+          }}
         >
           <div className="m-3">
             <label htmlFor="exampleInputEmail1" className="form-label">
@@ -103,10 +101,10 @@ export default function Login() {
               </button>
             </div>
           </div>
-          <button type="submit" className="m-3 btn btn-success">
+          <button type="submit" className="m-3 btn-zomato">
             Submit
           </button>
-          <Link to="/signup" className="m-3 mx-1 btn btn-danger">
+          <Link to="/signup" className="m-3 mx-1 btn btn-outline-danger">
             New User
           </Link>
         </form>

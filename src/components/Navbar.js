@@ -25,12 +25,12 @@ export default function Navbar() {
 
   return (
     <nav
-      className="navbar navbar-expand-lg navbar-dark bg-success position-fixed"
+      className="navbar navbar-expand-lg navbar-dark z-nav position-fixed"
       style={{
-        boxShadow: "0px 10px 20px rgba(0,0,0,0.3)",
         backdropFilter: "blur(10px)",
         zIndex: 10,
         width: "100%",
+        padding: "0.35rem 0",
       }}
     >
       <div className="container-fluid">
@@ -39,6 +39,9 @@ export default function Navbar() {
           to="/"
         >
           QuickBite
+          <div className="fs-6 fw-normal" style={{ fontSize: "0.8rem" }}>
+            Inspired by Zomato
+          </div>
         </Link>
 
         <button
@@ -71,17 +74,20 @@ export default function Navbar() {
 
           {!localStorage.getItem("token") ? (
             <div className="d-flex">
-              <Link className="btn bg-white text-success mx-1" to="/login">
+              <Link
+                className="btn btn-light text-danger mx-1 fw-semibold"
+                to="/login"
+              >
                 Login
               </Link>
-              <Link className="btn bg-white text-success mx-1" to="/signup">
+              <Link className="btn-zomato mx-1" to="/signup">
                 Signup
               </Link>
             </div>
           ) : (
             <div className="d-flex align-items-center">
               <div
-                className="btn bg-white text-success mx-2"
+                className="btn btn-light text-danger mx-2 fw-semibold"
                 onClick={loadCart}
               >
                 <Badge color="secondary" badgeContent={items.length}>
@@ -118,10 +124,7 @@ export default function Navbar() {
                       padding: "5px 10px",
                     }}
                   >
-                    <button
-                      onClick={handleLogout}
-                      className="btn btn-sm btn-success w-100"
-                    >
+                    <button onClick={handleLogout} className="btn-zomato w-100">
                       Logout
                     </button>
                   </div>

@@ -42,19 +42,18 @@ export default function Home() {
         <Carousel onSearch={setSearch} />
         <div className="container">
           {foodCat.length > 0 ? (
-            foodCat.map((data, i) => (
-              <div className="row mb-3" key={i}>
-                <div className="fs-3 m-3" key={i}>
-                  {data.CategoryName}
+            foodCat.map((data) => (
+              <div
+                className="row mb-3"
+                key={data._id || data.CategoryName || JSON.stringify(data)}
+              >
+                <div className="d-flex align-items-center justify-content-between">
+                  <div>
+                    <div className="section-title">{data.CategoryName}</div>
+                    <div className="pill-divider"></div>
+                  </div>
+                  <span className="category-pill">Chef's picks</span>
                 </div>
-                <hr
-                  id="hr-success"
-                  style={{
-                    height: "4px",
-                    backgroundImage:
-                      "-webkit-linear-gradient(left,rgb(0, 255, 137),rgb(0, 0, 0))",
-                  }}
-                />
                 {foodItems.length > 0 ? (
                   foodItems
                     .filter(
@@ -62,9 +61,13 @@ export default function Home() {
                         items.CategoryName === data.CategoryName &&
                         items.name.toLowerCase().includes(search.toLowerCase())
                     )
-                    .map((filterItems) => (
+                    .map((filterItems, itemIdx) => (
                       <div
-                        key={filterItems.id}
+                        key={
+                          filterItems._id ||
+                          filterItems.id ||
+                          `${data.CategoryName}-${itemIdx}`
+                        }
                         className="col-12 col-md-6 col-lg-3 hai"
                       >
                         <Card
@@ -72,7 +75,6 @@ export default function Home() {
                           item={filterItems}
                           options={filterItems.options[0]}
                           ImgSrc={filterItems.img}
-                          key={i}
                         />
                       </div>
                     ))

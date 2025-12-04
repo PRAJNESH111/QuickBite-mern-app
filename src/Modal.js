@@ -31,13 +31,11 @@ export default function Modal({ children, onClose }) {
       <div style={OVERLAY_STYLES} onClick={onClose} />
 
       <div style={MODAL_STYLES}>
-        <button
-          className="btn bg-danger fs-4 pt-2"
-          style={{ marginLeft: "90%", marginTop: "-35px" }}
-          onClick={onClose}
-        >
-          X
-        </button>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <button className="modal-close-btn" onClick={onClose}>
+            ✕
+          </button>
+        </div>
         {children}
       </div>
     </>,

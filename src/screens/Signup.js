@@ -86,10 +86,9 @@ export default function Signup() {
   return (
     <div
       style={{
-        backgroundImage:
-          'url("https://images.pexels.com/photos/1565982/pexels-photo-1565982.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")',
-        backgroundSize: "cover",
-        height: "100vh",
+        minHeight: "100vh",
+        background:
+          "linear-gradient(120deg, #2b0006 0%, #cb202d 55%, #ff5d7d 100%)",
       }}
     >
       <div className="pb-3">
@@ -98,8 +97,13 @@ export default function Signup() {
 
       <div className="container pt-4">
         <form
-          className="w-50 m-auto mt-5 border bg-dark border-success rounded"
+          className="w-50 m-auto mt-5 shadow-soft"
           onSubmit={handleSubmit}
+          style={{
+            backgroundColor: "rgba(255,255,255,0.96)",
+            borderRadius: "24px",
+            padding: "2rem",
+          }}
         >
           <div className="m-3">
             <label htmlFor="name" className="form-label">
@@ -172,10 +176,10 @@ export default function Signup() {
               </button>
             </div>
           </div>
-          <button type="submit" className="m-3 btn btn-success">
+          <button type="submit" className="m-3 btn-zomato">
             Submit
           </button>
-          <Link to="/login" className="m-3 mx-1 btn btn-danger">
+          <Link to="/login" className="m-3 mx-1 btn btn-outline-danger">
             Already a user
           </Link>
         </form>

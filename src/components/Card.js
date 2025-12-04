@@ -75,7 +75,10 @@ export default function Card(props) {
   let finalPrice = qty * parseInt(options[size]);
 
   return (
-    <div className="card h-100 shadow-sm" style={{ cursor: "pointer" }}>
+    <div
+      className="card h-100 food-card"
+      style={{ cursor: "pointer", backgroundColor: "#fff" }}
+    >
       {/* Shimmer placeholder */}
       {!imgLoaded && (
         <div
@@ -93,8 +96,8 @@ export default function Card(props) {
         onLoad={() => setImgLoaded(true)}
       />
 
-      <div className="card-body">
-        <h5 className="card-title">{props.foodName}</h5>
+      <div className="card-body d-flex flex-column">
+        <h5 className="card-title mb-3">{props.foodName}</h5>
 
         <div className="d-flex align-items-center mb-3">
           <select
@@ -124,13 +127,10 @@ export default function Card(props) {
             ))}
           </select>
 
-          <div className="ms-auto fs-5 fw-bold">₹{finalPrice}/-</div>
+          <div className="ms-auto fs-5 price-tag">₹{finalPrice}/-</div>
         </div>
         <hr />
-        <button
-          className="btn btn-success w-100 mt-auto"
-          onClick={handleAddToCart}
-        >
+        <button className="btn-zomato mt-auto" onClick={handleAddToCart}>
           Add to Cart
         </button>
       </div>

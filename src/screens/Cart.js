@@ -2,7 +2,6 @@ import React from "react";
 import Delete from "@mui/icons-material/Delete";
 import { useCart, useDispatchCart } from "../components/ContextReducer";
 import { API_URL } from "../config";
-import { sendOrderConfirmationEmail } from "../config/emailjs";
 
 export default function Cart() {
   let data = useCart();
@@ -14,47 +13,21 @@ export default function Cart() {
 
   const handleCheckOut = async () => {
     try {
-      let userEmail = localStorage.getItem("userEmail");
+      const token = localStorage.getItem("token");
 
-      if (!userEmail) {
-        alert("User email not found. Please log in.");
-        console.error("User email not found. Please log in.");
+      if (!token) {
+        alert("Please log in to place an order.");
+        console.error("Auth token missing. User must log in.");
         return;
       }
 
       console.log("Starting checkout process...");
       console.log("Cart data:", data);
-      console.log("User email:", userEmail);
 
       const orderData = {
         order_data: data,
-        email: userEmail,
         order_date: new Date().toDateString(),
       };
-
-      // Prepare order details for email
-      const orderDetails = {
-        orderId: Date.now().toString(),
-        totalAmount: data.reduce(
-          (total, item) => total + item.price * item.qty,
-          0
-        ),
-        items: data.map((item) => ({
-          name: item.name,
-          quantity: item.qty,
-          price: item.price,
-        })),
-      };
-
-      // Send order confirmation email using EmailJS
-      const emailSent = await sendOrderConfirmationEmail(
-        userEmail,
-        orderDetails
-      );
-
-      if (!emailSent) {
-        console.error("Failed to send order confirmation email");
-      }
 
       console.log("Sending order data:", orderData);
 
@@ -63,6 +36,7 @@ export default function Cart() {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "auth-token": token,
         },
         body: JSON.stringify(orderData),
       });
@@ -85,16 +59,16 @@ export default function Cart() {
     }
   };
 
-  let totalPrice = data.reduce(
-    (total, food) => total + food.price * food.qty,
-    0
-  );
+  let totalPrice = data.reduce((total, food) => total + food.price, 0);
 
   return (
     <div>
       <div className="container m-auto mt-5 table-responsive table-responsive-sm table-responsive-md">
         <table className="table">
-          <thead className="text-success fs-4">
+          <thead
+            style={{ backgroundColor: "rgba(203,32,45,0.08)" }}
+            className="text-danger fs-5"
+          >
             <tr>
               <th scope="col">#</th>
               <th scope="col">Name</th>
@@ -104,14 +78,14 @@ export default function Cart() {
               <th scope="col"></th>
             </tr>
           </thead>
-          <tbody className="text-white fs-5 ">
+          <tbody className="fs-5" style={{ color: "#2a1b1b" }}>
             {data.map((food, index) => (
               <tr key={index}>
                 <th scope="row">{index + 1}</th>
                 <td>{food.name}</td>
                 <td>{food.qty}</td>
                 <td>{food.size}</td>
-                <td>{food.price * food.qty}</td>
+                <td>₹{food.price}</td>
                 <td>
                   <button
                     type="button"
@@ -126,10 +100,10 @@ export default function Cart() {
           </tbody>
         </table>
         <div>
-          <h1 className="fs-2 text-white">Total Price: ₹{totalPrice}/-</h1>
+          <h1 className="fs-2 text-danger">Total Price: ₹{totalPrice}/-</h1>
         </div>
         <div>
-          <button className="btn bg-success mt-5" onClick={handleCheckOut}>
+          <button className="btn-zomato mt-3" onClick={handleCheckOut}>
             Place Order
           </button>
         </div>

@@ -1,25 +1,83 @@
+:root {
+  --z-red: #cb202d;
+  --z-red-dark: #9b0411;
+  --z-berry: #f43157;
+  --z-cream: #fff7f8;
+  --z-warm-gray: #3f2a2e;
+  --z-text: #2a1b1b;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: "Poppins", "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(160deg, #fff2f4 0%, #ffe8ec 60%, #fff7f8 100%);
+  color: var(--z-text);
+}
+
+a {
+  text-decoration: none;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: "Fira Code", Menlo, Consolas, "Courier New", monospace;
 }
 
-/* Custom hover shadow for buttons */
+.btn-zomato {
+  background: linear-gradient(120deg, var(--z-red), var(--z-berry));
+  color: #fff !important;
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1.75rem;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-zomato:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(203, 32, 45, 0.35);
+}
+
+.card {
+  border: none;
+  border-radius: 18px;
+}
+
+.form-select,
+.form-control {
+  border-radius: 0.65rem;
+  border: 1px solid rgba(203, 32, 45, 0.2);
+  padding: 0.6rem 0.9rem;
+}
+
+.badge-zomato {
+  background-color: rgba(203, 32, 45, 0.12);
+  color: var(--z-red);
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.shadow-soft {
+  box-shadow: 0 20px 45px rgba(62, 12, 18, 0.08);
+}
+
 .hover-shadow:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 30px rgba(62, 12, 18, 0.12);
 }
 
-/* Optional: For better select box styling */
-.form-select {
-  border-radius: 0.375rem; /* Adjust as needed */
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--z-warm-gray);
+}
+
+.pill-divider {
+  width: 80px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--z-red), var(--z-berry));
+  margin-bottom: 1.5rem;
 }
 .shimmer {
   position: relative;
