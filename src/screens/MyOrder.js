@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { API_URL } from "../config";
+import apiService from "../services/apiService";
 
 const PLACEHOLDER_IMG = "/momos.jpg";
 
@@ -11,26 +12,20 @@ export default function MyOrder() {
   const [loading, setLoading] = useState(true);
   const [foodMap, setFoodMap] = useState({});
 
-  // Fetch all food items and map by ID
+  // Fetch all food items and map by ID (with caching)
   const fetchFoodMap = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/foodData`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const data = await apiService.fetchFoodData();
+      const foodItems = data[0] || [];
+
+      // Create a map of foodId -> food item
+      const map = {};
+      foodItems.forEach((item) => {
+        map[item._id] = item;
       });
-      if (response.ok) {
-        const data = await response.json();
-        const foodItems = data[0] || [];
 
-        // Create a map of foodId -> food item
-        const map = {};
-        foodItems.forEach((item) => {
-          map[item._id] = item;
-        });
-
-        setFoodMap(map);
-        console.log("Food map created:", map);
-      }
+      setFoodMap(map);
+      console.log("Food map created:", map);
     } catch (err) {
       console.error("Failed to fetch food map:", err);
     }
@@ -55,38 +50,76 @@ export default function MyOrder() {
       setLoading(true);
       setError(null);
 
-      const userEmail = localStorage.getItem("userEmail");
-      if (!userEmail) {
-        setError("User email not found. Please log in.");
+      const token = localStorage.getItem("token");
+      console.log("🔑 Token from localStorage:", token ? "Present" : "Missing");
+      console.log("🔗 API_URL being used:", API_URL);
+
+      if (token) {
+        try {
+          const decoded = JSON.parse(atob(token.split(".")[1]));
+          console.log("🔐 Token decoded:", decoded);
+        } catch (e) {
+          console.log("Could not decode token");
+        }
+      }
+
+      if (!token) {
+        setError("User not authenticated. Please log in.");
         setLoading(false);
         return;
       }
 
-      const response = await fetch(`${API_URL}/api/myOrderData`, {
+      console.log("🌐 Fetching orders from backend...");
+      const url = `${API_URL}/api/myOrderData`;
+      console.log("🔗 Full URL:", url);
+
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "auth-token": token,
         },
-        body: JSON.stringify({ email: userEmail }),
       });
 
+      console.log("📊 Response status:", response.status);
+      console.log("📊 Response headers:", response.headers);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        console.log("❌ Error response:", errorData);
+        throw new Error(
+          errorData.error || `HTTP error! status: ${response.status}`
+        );
       }
 
       const data = await response.json();
-      console.log("Fetched order data:", data);
+      console.log("✅ Order data received:", data);
+      console.log("📥 Full response object:", JSON.stringify(data, null, 2));
+      console.log("📊 data.orderData:", data.orderData);
+      console.log("📊 data.orderData.orders:", data.orderData?.orders);
+      console.log("📊 Is array?:", Array.isArray(data.orderData?.orders));
 
       // Extract orders array from response
       const orderList = data?.orderData?.orders || [];
+      console.log(`📦 Total orders found: ${orderList.length}`);
+      console.log(`📦 Order list type:`, typeof orderList);
+
+      if (orderList.length > 0) {
+        console.log("📋 First order details:", orderList[0]);
+        console.log("📋 First order keys:", Object.keys(orderList[0]));
+      }
+
       setOrders(orderList);
 
       if (orderList.length === 0) {
-        setError("No orders found for this account.");
+        console.log("⚠️ Setting error message - no orders found");
+        setError(
+          "No orders found for this account. Place an order to get started!"
+        );
       }
     } catch (err) {
-      console.error("Error fetching orders:", err);
+      console.error("❌ Error fetching orders:", err);
       setError(err.message || "Failed to load orders");
     } finally {
       setLoading(false);
@@ -97,6 +130,18 @@ export default function MyOrder() {
     fetchFoodMap();
     fetchMyOrder();
   }, []);
+
+  // Debug: Log orders state whenever it changes
+  useEffect(() => {
+    console.log("📊 Orders state updated:", orders);
+  }, [orders]);
+
+  // Add refresh button handler
+  const handleRefresh = () => {
+    console.log("🔄 Refreshing orders...");
+    fetchFoodMap();
+    fetchMyOrder();
+  };
 
   const renderOrderCards = () => {
     if (!orders.length) return null;
@@ -198,7 +243,38 @@ export default function MyOrder() {
       <Navbar />
 
       <div className="container py-4">
-        <h2 className="mb-4 text-center fw-bold">My Orders</h2>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2 className="fw-bold">My Orders</h2>
+          <button
+            className="btn btn-outline-danger"
+            onClick={handleRefresh}
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "🔄 Refresh"}
+          </button>
+        </div>
+
+        {/* DEBUG INFO - Remove later */}
+        <div
+          style={{
+            fontSize: "0.75rem",
+            color: "#666",
+            marginBottom: "1rem",
+            padding: "0.5rem",
+            backgroundColor: "#f0f0f0",
+            borderRadius: "4px",
+          }}
+        >
+          <strong>Debug Info:</strong>
+          <br />
+          Loading: {loading ? "Yes" : "No"}
+          <br />
+          Error: {error ? error : "None"}
+          <br />
+          Orders Count: {orders.length}
+          <br />
+          Orders State: {JSON.stringify(orders.slice(0, 1))}
+        </div>
 
         {loading && (
           <div className="alert alert-info mt-3" role="alert">

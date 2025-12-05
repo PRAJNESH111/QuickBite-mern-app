@@ -1,11 +1,14 @@
 import React from "react";
 import Delete from "@mui/icons-material/Delete";
 import { useCart, useDispatchCart } from "../components/ContextReducer";
+import { useNavigate } from "react-router-dom";
 import { API_URL } from "../config";
+import apiService from "../services/apiService";
 
 export default function Cart() {
   let data = useCart();
   let dispatch = useDispatchCart();
+  const navigate = useNavigate();
 
   if (data.length === 0) {
     return <div className="m-5 w-100 text-center fs-3">The Cart is Empty!</div>;
@@ -46,8 +49,21 @@ export default function Cart() {
       console.log("Response data:", responseData);
 
       if (response.ok) {
+        console.log("✅ Order successful! Clearing cache and redirecting...");
+
+        // Clear cache so fresh orders are fetched
+        apiService.clearCache();
+        console.log("🗑️ Cache cleared");
+
+        // Clear cart
         dispatch({ type: "DROP" });
-        alert("Order Placed successfully!");
+
+        alert("Order Placed successfully! Redirecting to My Orders...");
+
+        // Wait a moment for database to write, then redirect
+        setTimeout(() => {
+          navigate("/myorder");
+        }, 1500);
       } else {
         console.error(`Checkout failed with status: ${response.status}`);
         console.error("Response data:", responseData);

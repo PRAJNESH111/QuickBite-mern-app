@@ -3,7 +3,7 @@ import Card from "../components/Card";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Carousel from "../components/Carousel";
-import { API_URL } from "../config";
+import apiService from "../services/apiService";
 
 export default function Home() {
   const [foodCat, setFoodCat] = useState([]);
@@ -12,18 +12,7 @@ export default function Home() {
 
   const loadFoodItems = async () => {
     try {
-      let response = await fetch(`${API_URL}/api/foodData`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      let data = await response.json();
-      // console.log(data);
-
+      const data = await apiService.fetchFoodData();
       setFoodItems(data[0] || []);
       setFoodCat(data[1] || []);
     } catch (error) {

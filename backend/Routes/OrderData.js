@@ -85,15 +85,108 @@ router.post("/orderData", fetch, async (req, res) => {
   }
 });
 
-// Get all orders for a user by email
-router.post("/myOrderData", async (req, res) => {
+// Get all orders for a user by JWT token
+router.post("/myOrderData", fetch, async (req, res) => {
   try {
-    const orders = await Order.find({ email: req.body.email }).sort({
+    console.log("🔍 /myOrderData route called");
+    console.log("👤 User ID:", req.user?.id);
+
+    if (!req.user || !req.user.id) {
+      console.log("❌ No user in request");
+      return res
+        .status(401)
+        .json({ success: false, error: "Invalid auth token. Please log in." });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
+      console.log("❌ Invalid ObjectId:", req.user.id);
+      return res.status(401).json({
+        success: false,
+        error: "Invalid user identifier. Please log in again.",
+      });
+    }
+
+    const user = await User.findById(req.user.id).select("email");
+    if (!user) {
+      console.log("❌ User not found in DB");
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    const userEmail = user.email;
+    console.log("✅ User found with email:", userEmail);
+
+    // Check total orders in database
+    const totalOrders = await Order.countDocuments();
+    console.log(`📊 Total orders in database: ${totalOrders}`);
+
+    // Search by email (most reliable - orders were saved with email)
+    const orders = await Order.find({ email: userEmail }).sort({
       createdAt: -1,
     });
-    return res.json({ orderData: { orders } });
+
+    console.log(`📦 Retrieved ${orders.length} orders for email: ${userEmail}`);
+
+    if (orders.length > 0) {
+      console.log("📋 First order found:", {
+        id: orders[0]._id,
+        email: orders[0].email,
+        itemsCount: orders[0].items?.length,
+        totalAmount: orders[0].totalAmount,
+        orderDate: orders[0].orderDate,
+      });
+    } else {
+      console.log("⚠️ No orders found for this email");
+      // Debug: show all emails in orders collection
+      const allOrders = await Order.find().select("email").limit(10).lean();
+      const uniqueEmails = [...new Set(allOrders.map((o) => o.email))];
+      console.log("📋 Sample emails in orders collection:", uniqueEmails);
+    }
+
+    return res.json({ success: true, orderData: { orders } });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    console.error("❌ Error in /myOrderData route:", error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}); // Debug route - get all orders in database (remove after testing)
+router.get("/debug/allOrders", async (req, res) => {
+  try {
+    console.log("🔍 Debug route called - fetching all orders and users");
+    const orders = await Order.find().lean();
+    const users = await User.find().select("email name").lean();
+
+    console.log(`Found ${orders.length} orders and ${users.length} users`);
+
+    return res.json({
+      success: true,
+      totalOrders: orders.length,
+      totalUsers: users.length,
+      orders: orders,
+      users: users,
+    });
+  } catch (error) {
+    console.error("❌ Debug route error:", error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Debug route - Get orders for a specific email
+router.get("/debug/ordersForEmail/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    console.log(`🔍 Fetching orders for email: ${email}`);
+
+    const orders = await Order.find({ email }).lean();
+    console.log(`Found ${orders.length} orders for ${email}`);
+
+    return res.json({
+      success: true,
+      email,
+      ordersCount: orders.length,
+      orders,
+    });
+  } catch (error) {
+    console.error("❌ Debug route error:", error);
+    return res.status(500).json({ success: false, error: error.message });
   }
 });
 
