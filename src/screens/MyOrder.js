@@ -25,9 +25,8 @@ export default function MyOrder() {
       });
 
       setFoodMap(map);
-      console.log("Food map created:", map);
     } catch (err) {
-      console.error("Failed to fetch food map:", err);
+      // Silently fail - use fallback images
     }
   };
 
@@ -85,7 +84,6 @@ export default function MyOrder() {
         );
       }
     } catch (err) {
-      console.error("Error fetching orders:", err);
       setError(err.message || "Failed to load orders");
     } finally {
       setLoading(false);
@@ -97,14 +95,8 @@ export default function MyOrder() {
     fetchMyOrder();
   }, []);
 
-  // Debug: Log orders state whenever it changes
-  useEffect(() => {
-    console.log("📊 Orders state updated:", orders);
-  }, [orders]);
-
   // Add refresh button handler
   const handleRefresh = () => {
-    console.log("🔄 Refreshing orders...");
     fetchFoodMap();
     fetchMyOrder();
   };
@@ -218,28 +210,6 @@ export default function MyOrder() {
           >
             {loading ? "Loading..." : "🔄 Refresh"}
           </button>
-        </div>
-
-        {/* DEBUG INFO - Remove later */}
-        <div
-          style={{
-            fontSize: "0.75rem",
-            color: "#666",
-            marginBottom: "1rem",
-            padding: "0.5rem",
-            backgroundColor: "#f0f0f0",
-            borderRadius: "4px",
-          }}
-        >
-          <strong>Debug Info:</strong>
-          <br />
-          Loading: {loading ? "Yes" : "No"}
-          <br />
-          Error: {error ? error : "None"}
-          <br />
-          Orders Count: {orders.length}
-          <br />
-          Orders State: {JSON.stringify(orders.slice(0, 1))}
         </div>
 
         {loading && (

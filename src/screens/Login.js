@@ -22,7 +22,6 @@ export default function Login() {
         }),
       });
       const json = await response.json();
-      console.log(json);
       if (json.success) {
         // Save the auth token to local storage and redirect
         localStorage.setItem("userEmail", credentials.email);
@@ -33,8 +32,7 @@ export default function Login() {
         alert("Enter Valid Credentials");
       }
     } catch (error) {
-      console.error("Login error:", error);
-      alert("An error occurred during login. Please try again.");
+      alert("An error occurred during login. Please try again");
     }
   };
 

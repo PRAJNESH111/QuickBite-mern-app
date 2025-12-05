@@ -30,7 +30,6 @@ export default function Signup() {
     });
 
     let [lat, long] = latlong;
-    console.log(lat, long);
 
     const response = await fetch(`${API_URL}/api/getlocation`, {
       method: "POST",
@@ -41,9 +40,8 @@ export default function Signup() {
     });
 
     const { location } = await response.json();
-    console.log(location);
     setAddress(location);
-    setCredentials({ ...credentials, geolocation: location }); // Corrected here
+    setCredentials({ ...credentials, geolocation: location });
   };
 
   const handleSubmit = async (e) => {
@@ -63,7 +61,6 @@ export default function Signup() {
     });
 
     const json = await response.json();
-    console.log(json);
 
     if (json.success) {
       localStorage.setItem("token", json.authToken);

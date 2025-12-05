@@ -17,12 +17,10 @@ class APIService {
     // Check cache first
     const cached = cacheService.get(cacheKey);
     if (cached) {
-      console.log("📦 Using cached food data");
       return cached;
     }
 
     try {
-      console.log("🌐 Fetching food data from API...");
       const response = await fetch(`${API_URL}/api/foodData`, {
         method: "POST",
         headers: {
@@ -38,11 +36,10 @@ class APIService {
 
       // Cache the response for 30 minutes
       cacheService.set(cacheKey, data);
-      console.log("✅ Food data cached successfully");
 
       return data;
     } catch (error) {
-      console.error("❌ Failed to fetch food data:", error);
+      console.error("Failed to fetch food data:", error);
       throw error;
     }
   }
@@ -54,7 +51,6 @@ class APIService {
    */
   async fetchUserOrders(token) {
     try {
-      console.log("🌐 Fetching user orders from API...");
       const response = await fetch(`${API_URL}/api/myOrderData`, {
         method: "POST",
         headers: {
@@ -68,11 +64,10 @@ class APIService {
       }
 
       const data = await response.json();
-      console.log("✅ User orders fetched successfully");
 
       return data;
     } catch (error) {
-      console.error("❌ Failed to fetch user orders:", error);
+      console.error("Failed to fetch user orders:", error);
       throw error;
     }
   }
@@ -82,7 +77,6 @@ class APIService {
    */
   clearCache() {
     cacheService.clearAll();
-    console.log("🗑️ Cache cleared");
   }
 
   /**
@@ -91,7 +85,6 @@ class APIService {
    */
   clearCacheKey(key) {
     cacheService.clear(key);
-    console.log(`🗑️ Cache cleared for key: ${key}`);
   }
 
   /**

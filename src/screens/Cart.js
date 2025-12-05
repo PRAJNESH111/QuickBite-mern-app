@@ -20,19 +20,13 @@ export default function Cart() {
 
       if (!token) {
         alert("Please log in to place an order.");
-        console.error("Auth token missing. User must log in.");
         return;
       }
-
-      console.log("Starting checkout process...");
-      console.log("Cart data:", data);
 
       const orderData = {
         order_data: data,
         order_date: new Date().toDateString(),
       };
-
-      console.log("Sending order data:", orderData);
 
       let response = await fetch(`${API_URL}/api/orderData`, {
         method: "POST",
@@ -44,16 +38,11 @@ export default function Cart() {
         body: JSON.stringify(orderData),
       });
 
-      console.log("Response status:", response.status);
       const responseData = await response.json();
-      console.log("Response data:", responseData);
 
       if (response.ok) {
-        console.log("✅ Order successful! Clearing cache and redirecting...");
-
         // Clear cache so fresh orders are fetched
         apiService.clearCache();
-        console.log("🗑️ Cache cleared");
 
         // Clear cart
         dispatch({ type: "DROP" });
@@ -65,12 +54,9 @@ export default function Cart() {
           navigate("/myorder");
         }, 1500);
       } else {
-        console.error(`Checkout failed with status: ${response.status}`);
-        console.error("Response data:", responseData);
         alert("Checkout failed. Please try again.");
       }
     } catch (error) {
-      console.error("Error during checkout:", error);
       alert("Error during checkout. Please try again.");
     }
   };
