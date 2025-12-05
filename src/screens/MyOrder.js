@@ -3,6 +3,7 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { API_URL } from "../config";
 import apiService from "../services/apiService";
+import { ShimmerOrderCard } from "../components/ShimmerCard";
 
 const PLACEHOLDER_IMG = "/momos.jpg";
 
@@ -213,8 +214,10 @@ export default function MyOrder() {
         </div>
 
         {loading && (
-          <div className="alert alert-info mt-3" role="alert">
-            Loading orders...
+          <div className="d-flex flex-column gap-3">
+            {Array.from({ length: 3 }).map((_, idx) => (
+              <ShimmerOrderCard key={idx} />
+            ))}
           </div>
         )}
 
@@ -226,7 +229,7 @@ export default function MyOrder() {
 
         {!loading && !error && orders.length === 0 && (
           <div className="alert alert-info mt-3" role="alert">
-            No orders found.
+            No orders found. Place an order to get started!
           </div>
         )}
 

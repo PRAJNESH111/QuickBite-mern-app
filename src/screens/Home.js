@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Card from "../components/Card";
+import ShimmerCard from "../components/ShimmerCard";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import Carousel from "../components/Carousel";
@@ -9,14 +10,18 @@ export default function Home() {
   const [foodCat, setFoodCat] = useState([]);
   const [foodItems, setFoodItems] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const loadFoodItems = async () => {
     try {
+      setLoading(true);
       const data = await apiService.fetchFoodData();
       setFoodItems(data[0] || []);
       setFoodCat(data[1] || []);
     } catch (error) {
       console.error("Failed to fetch food items:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -24,13 +29,33 @@ export default function Home() {
     loadFoodItems();
   }, []);
 
+  const renderShimmerCards = () => {
+    return Array.from({ length: 8 }).map((_, idx) => (
+      <div key={idx} className="col-12 col-md-6 col-lg-3 hai">
+        <ShimmerCard />
+      </div>
+    ));
+  };
+
   return (
     <div>
       <Navbar />
       <div className="w-100 pt-10">
         <Carousel onSearch={setSearch} />
         <div className="container">
-          {foodCat.length > 0 ? (
+          {loading ? (
+            <div className="row mb-3">
+              <div className="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                  <div className="section-title" style={{ color: "#ccc" }}>
+                    Loading...
+                  </div>
+                  <div className="pill-divider"></div>
+                </div>
+              </div>
+              {renderShimmerCards()}
+            </div>
+          ) : foodCat.length > 0 ? (
             foodCat.map((data) => (
               <div
                 className="row mb-3"
