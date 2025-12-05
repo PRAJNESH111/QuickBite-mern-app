@@ -76,14 +76,14 @@ export default function Card(props) {
 
   return (
     <div
-      className="card h-100 food-card"
+      className="food-card mb-4  shadow-sm"
       style={{ cursor: "pointer", backgroundColor: "#fff" }}
     >
       {/* Shimmer placeholder */}
       {!imgLoaded && (
         <div
           className="card-img-top img-fluid shimmer"
-          style={{ height: "180px", backgroundColor: "#e0e0e0" }}
+          style={{ height: "170px", backgroundColor: "#e0e0e0" }}
         ></div>
       )}
 
@@ -92,19 +92,20 @@ export default function Card(props) {
         src={props.ImgSrc}
         className={`card-img-top img-fluid ${imgLoaded ? "" : "d-none"}`}
         alt={props.foodName}
-        style={{ height: "180px", objectFit: "cover" }}
+        style={{ height: "170px", objectFit: "cover" }}
         onLoad={() => setImgLoaded(true)}
       />
 
       <div className="card-body d-flex flex-column">
-        <h5 className="card-title mb-3">{props.foodName}</h5>
+        <h5 className="card-title mb-2">{props.foodName}</h5>
 
-        <div className="d-flex align-items-center mb-3">
+        <div className="d-flex align-items-center mb-2">
           <select
             className="form-select form-select-sm w-auto me-2"
             onClick={handleClick}
             onChange={handleQty}
             value={qty}
+            style={{ backgroundColor: "#fff", color: "#000" }}
           >
             {Array.from(Array(6), (e, i) => (
               <option key={i + 1} value={i + 1}>
@@ -119,6 +120,7 @@ export default function Card(props) {
             onClick={handleClick}
             onChange={handleOptions}
             value={size}
+            style={{ backgroundColor: "#fff", color: "#000" }}
           >
             {priceOptions.map((i) => (
               <option key={i} value={i}>

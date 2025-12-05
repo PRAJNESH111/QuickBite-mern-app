@@ -25,10 +25,9 @@ export default function Navbar() {
 
   return (
     <nav
-      className="navbar navbar-expand-lg navbar-dark z-nav position-fixed"
+      className="navbar navbar-expand-lg  bg-red navbar-dark "
       style={{
-        backdropFilter: "blur(10px)",
-        zIndex: 10,
+        zIndex: 100,
         width: "100%",
         padding: "0.35rem 0",
       }}
@@ -87,8 +86,19 @@ export default function Navbar() {
           ) : (
             <div className="d-flex align-items-center">
               <div
-                className="btn btn-light text-danger mx-2 fw-semibold"
+                className="btn fw-semibold mx-2"
                 onClick={loadCart}
+                style={{
+                  backgroundColor: "#fff",
+                  color: "#cb202d",
+                  border: "2px solid #cb202d",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  padding: "0.5rem 1rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                }}
               >
                 <Badge color="secondary" badgeContent={items.length}>
                   <ShoppingCartIcon />

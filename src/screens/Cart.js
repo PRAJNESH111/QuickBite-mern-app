@@ -62,50 +62,100 @@ export default function Cart() {
   let totalPrice = data.reduce((total, food) => total + food.price, 0);
 
   return (
-    <div>
-      <div className="container m-auto mt-5 table-responsive table-responsive-sm table-responsive-md">
-        <table className="table">
-          <thead
-            style={{ backgroundColor: "rgba(203,32,45,0.08)" }}
-            className="text-danger fs-5"
-          >
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Name</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Option</th>
-              <th scope="col">Amount</th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          <tbody className="fs-5" style={{ color: "#2a1b1b" }}>
-            {data.map((food, index) => (
-              <tr key={index}>
-                <th scope="row">{index + 1}</th>
-                <td>{food.name}</td>
-                <td>{food.qty}</td>
-                <td>{food.size}</td>
-                <td>₹{food.price}</td>
-                <td>
-                  <button
-                    type="button"
-                    className="btn p-0 btn-danger "
-                    onClick={() => dispatch({ type: "REMOVE", index: index })}
-                  >
-                    <Delete />
-                  </button>
-                </td>
+    <div className="cart-container">
+      <div className="container-fluid mt-4 mt-md-5 px-2 px-md-4">
+        {/* Desktop/Tablet Table View */}
+        <div className="d-none d-lg-block table-responsive">
+          <table className="table table-hover">
+            <thead
+              style={{ backgroundColor: "rgba(203,32,45,0.08)" }}
+              className="text-danger fs-5"
+            >
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Option</th>
+                <th scope="col">Amount</th>
+                <th scope="col">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <div>
-          <h1 className="fs-2 text-danger">Total Price: ₹{totalPrice}/-</h1>
+            </thead>
+            <tbody className="fs-5" style={{ color: "#2a1b1b" }}>
+              {data.map((food, index) => (
+                <tr key={index}>
+                  <th scope="row">{index + 1}</th>
+                  <td>{food.name}</td>
+                  <td>{food.qty}</td>
+                  <td>{food.size}</td>
+                  <td>₹{food.price}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn p-0 btn-danger"
+                      onClick={() => dispatch({ type: "REMOVE", index: index })}
+                    >
+                      <Delete />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div>
-          <button className="btn-zomato mt-3" onClick={handleCheckOut}>
-            Place Order
-          </button>
+
+        {/* Mobile/Tablet Card View */}
+        <div className="d-lg-none">
+          {data.map((food, index) => (
+            <div key={index} className="cart-card mb-3">
+              <div className="cart-card-header d-flex justify-content-between align-items-center">
+                <span className="badge bg-danger fs-6">#{index + 1}</span>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-danger p-1"
+                  onClick={() => dispatch({ type: "REMOVE", index: index })}
+                >
+                  <Delete fontSize="small" />
+                </button>
+              </div>
+              <div className="cart-card-body">
+                <div className="cart-item-row">
+                  <span className="label">Name:</span>
+                  <span className="value">{food.name}</span>
+                </div>
+                <div className="cart-item-row">
+                  <span className="label">Quantity:</span>
+                  <span className="value">{food.qty}</span>
+                </div>
+                <div className="cart-item-row">
+                  <span className="label">Option:</span>
+                  <span className="value">{food.size}</span>
+                </div>
+                <div className="cart-item-row">
+                  <span className="label">Amount:</span>
+                  <span className="value text-danger fw-bold">
+                    ₹{food.price}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Total and Checkout */}
+        <div className="cart-footer mt-4 mt-md-5">
+          <div className="total-section mb-4">
+            <h2 className="fs-3 fs-md-2 text-danger fw-bold">
+              Total Price: ₹{totalPrice}/-
+            </h2>
+          </div>
+          <div className="checkout-section">
+            <button
+              className="btn-zomato w-100 w-md-auto"
+              onClick={handleCheckOut}
+            >
+              Place Order
+            </button>
+          </div>
         </div>
       </div>
     </div>
