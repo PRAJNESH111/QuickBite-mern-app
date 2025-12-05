@@ -92,18 +92,21 @@ export default function Signup() {
         <Navbar />
       </div>
 
-      <div className="container pt-4">
+      <div className="container-fluid px-2 px-sm-3 pt-4">
         <form
-          className="w-50 m-auto mt-5 shadow-soft"
+          className="mx-auto mt-5 shadow-soft"
           onSubmit={handleSubmit}
           style={{
             backgroundColor: "rgba(255,255,255,0.96)",
             borderRadius: "24px",
-            padding: "2rem",
+            padding: "1.5rem",
+            maxWidth: "500px",
+            width: "100%",
           }}
         >
-          <div className="m-3">
-            <label htmlFor="name" className="form-label">
+          <h3 className="text-center text-danger mb-4 fw-bold">Sign Up</h3>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label text-dark">
               Name
             </label>
             <input
@@ -114,8 +117,8 @@ export default function Signup() {
               onChange={onChange}
             />
           </div>
-          <div className="m-3">
-            <label htmlFor="email" className="form-label">
+          <div className="mb-3">
+            <label htmlFor="email" className="form-label text-dark">
               Email address
             </label>
             <input
@@ -126,8 +129,8 @@ export default function Signup() {
               onChange={onChange}
             />
           </div>
-          <div className="m-3">
-            <label htmlFor="address" className="form-label">
+          <div className="mb-3">
+            <label htmlFor="address" className="form-label text-dark">
               Address
             </label>
             <input
@@ -138,22 +141,24 @@ export default function Signup() {
               value={address}
               onChange={(e) => {
                 setAddress(e.target.value);
-                // Keep credentials.geolocation in sync so Mongoose has a location value
                 setCredentials({ ...credentials, geolocation: e.target.value });
               }}
             />
           </div>
-          <div className="m-3">
+          <div className="mb-3">
             <button
               type="button"
               onClick={handleClick}
-              className="btn btn-success"
+              className="btn btn-success w-100"
             >
-              Click for current Location
+              📍 Get Current Location
             </button>
           </div>
-          <div className="m-3">
-            <label htmlFor="exampleInputPassword1" className="form-label">
+          <div className="mb-3">
+            <label
+              htmlFor="exampleInputPassword1"
+              className="form-label text-dark"
+            >
               Password
             </label>
             <div className="input-group">
@@ -173,12 +178,17 @@ export default function Signup() {
               </button>
             </div>
           </div>
-          <button type="submit" className="m-3 btn-zomato">
-            Submit
-          </button>
-          <Link to="/login" className="m-3 mx-1 btn btn-outline-danger">
-            Already a user
-          </Link>
+          <div className="d-grid gap-2 mb-3">
+            <button type="submit" className="btn-zomato">
+              Create Account
+            </button>
+          </div>
+          <div className="text-center">
+            <p className="text-dark mb-0">Already have an account?</p>
+            <Link to="/login" className="btn btn-outline-danger btn-sm mt-2">
+              Login Here
+            </Link>
+          </div>
         </form>
       </div>
     </div>

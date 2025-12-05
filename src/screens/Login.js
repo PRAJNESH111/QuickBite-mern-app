@@ -52,18 +52,24 @@ export default function Login() {
       <div className="pb-3">
         <Navbar />
       </div>
-      <div className="container pt-4">
+      <div className="container-fluid px-2 px-sm-3 pt-4">
         <form
-          className="w-50 m-auto mt-5 shadow-soft"
+          className="mx-auto mt-5 shadow-soft"
           onSubmit={handleSubmit}
           style={{
             backgroundColor: "rgba(255,255,255,0.95)",
             borderRadius: "24px",
-            padding: "2rem",
+            padding: "1.5rem",
+            maxWidth: "500px",
+            width: "100%",
           }}
         >
-          <div className="m-3">
-            <label htmlFor="exampleInputEmail1" className="form-label">
+          <h3 className="text-center text-danger mb-4 fw-bold">Login</h3>
+          <div className="mb-3">
+            <label
+              htmlFor="exampleInputEmail1"
+              className="form-label text-dark"
+            >
               Email address
             </label>
             <input
@@ -78,8 +84,11 @@ export default function Login() {
               We'll never share your email with anyone.
             </div>
           </div>
-          <div className="m-3">
-            <label htmlFor="exampleInputPassword1" className="form-label">
+          <div className="mb-3">
+            <label
+              htmlFor="exampleInputPassword1"
+              className="form-label text-dark"
+            >
               Password
             </label>
             <div className="input-group">
@@ -99,12 +108,17 @@ export default function Login() {
               </button>
             </div>
           </div>
-          <button type="submit" className="m-3 btn-zomato">
-            Submit
-          </button>
-          <Link to="/signup" className="m-3 mx-1 btn btn-outline-danger">
-            New User
-          </Link>
+          <div className="d-grid gap-2 mb-3">
+            <button type="submit" className="btn-zomato">
+              Login
+            </button>
+          </div>
+          <div className="text-center">
+            <p className="text-dark mb-0">Don't have an account?</p>
+            <Link to="/signup" className="btn btn-outline-danger btn-sm mt-2">
+              Create New Account
+            </Link>
+          </div>
         </form>
       </div>
     </div>
