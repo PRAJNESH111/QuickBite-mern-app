@@ -88,18 +88,13 @@ router.post("/orderData", fetch, async (req, res) => {
 // Get all orders for a user by JWT token
 router.post("/myOrderData", fetch, async (req, res) => {
   try {
-    console.log("🔍 /myOrderData route called");
-    console.log("👤 User ID:", req.user?.id);
-
     if (!req.user || !req.user.id) {
-      console.log("❌ No user in request");
       return res
         .status(401)
         .json({ success: false, error: "Invalid auth token. Please log in." });
     }
 
     if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
-      console.log("❌ Invalid ObjectId:", req.user.id);
       return res.status(401).json({
         success: false,
         error: "Invalid user identifier. Please log in again.",
@@ -108,39 +103,15 @@ router.post("/myOrderData", fetch, async (req, res) => {
 
     const user = await User.findById(req.user.id).select("email");
     if (!user) {
-      console.log("❌ User not found in DB");
       return res.status(404).json({ success: false, error: "User not found" });
     }
 
     const userEmail = user.email;
-    console.log("✅ User found with email:", userEmail);
-
-    // Check total orders in database
-    const totalOrders = await Order.countDocuments();
-    console.log(`📊 Total orders in database: ${totalOrders}`);
 
     // Search by email (most reliable - orders were saved with email)
     const orders = await Order.find({ email: userEmail }).sort({
       createdAt: -1,
     });
-
-    console.log(`📦 Retrieved ${orders.length} orders for email: ${userEmail}`);
-
-    if (orders.length > 0) {
-      console.log("📋 First order found:", {
-        id: orders[0]._id,
-        email: orders[0].email,
-        itemsCount: orders[0].items?.length,
-        totalAmount: orders[0].totalAmount,
-        orderDate: orders[0].orderDate,
-      });
-    } else {
-      console.log("⚠️ No orders found for this email");
-      // Debug: show all emails in orders collection
-      const allOrders = await Order.find().select("email").limit(10).lean();
-      const uniqueEmails = [...new Set(allOrders.map((o) => o.email))];
-      console.log("📋 Sample emails in orders collection:", uniqueEmails);
-    }
 
     return res.json({ success: true, orderData: { orders } });
   } catch (error) {

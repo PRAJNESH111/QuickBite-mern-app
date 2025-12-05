@@ -51,28 +51,13 @@ export default function MyOrder() {
       setError(null);
 
       const token = localStorage.getItem("token");
-      console.log("🔑 Token from localStorage:", token ? "Present" : "Missing");
-      console.log("🔗 API_URL being used:", API_URL);
-
-      if (token) {
-        try {
-          const decoded = JSON.parse(atob(token.split(".")[1]));
-          console.log("🔐 Token decoded:", decoded);
-        } catch (e) {
-          console.log("Could not decode token");
-        }
-      }
-
       if (!token) {
         setError("User not authenticated. Please log in.");
         setLoading(false);
         return;
       }
 
-      console.log("🌐 Fetching orders from backend...");
       const url = `${API_URL}/api/myOrderData`;
-      console.log("🔗 Full URL:", url);
-
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -82,44 +67,25 @@ export default function MyOrder() {
         },
       });
 
-      console.log("📊 Response status:", response.status);
-      console.log("📊 Response headers:", response.headers);
-
       if (!response.ok) {
         const errorData = await response.json();
-        console.log("❌ Error response:", errorData);
         throw new Error(
           errorData.error || `HTTP error! status: ${response.status}`
         );
       }
 
       const data = await response.json();
-      console.log("✅ Order data received:", data);
-      console.log("📥 Full response object:", JSON.stringify(data, null, 2));
-      console.log("📊 data.orderData:", data.orderData);
-      console.log("📊 data.orderData.orders:", data.orderData?.orders);
-      console.log("📊 Is array?:", Array.isArray(data.orderData?.orders));
-
-      // Extract orders array from response
       const orderList = data?.orderData?.orders || [];
-      console.log(`📦 Total orders found: ${orderList.length}`);
-      console.log(`📦 Order list type:`, typeof orderList);
-
-      if (orderList.length > 0) {
-        console.log("📋 First order details:", orderList[0]);
-        console.log("📋 First order keys:", Object.keys(orderList[0]));
-      }
 
       setOrders(orderList);
 
       if (orderList.length === 0) {
-        console.log("⚠️ Setting error message - no orders found");
         setError(
           "No orders found for this account. Place an order to get started!"
         );
       }
     } catch (err) {
-      console.error("❌ Error fetching orders:", err);
+      console.error("Error fetching orders:", err);
       setError(err.message || "Failed to load orders");
     } finally {
       setLoading(false);
