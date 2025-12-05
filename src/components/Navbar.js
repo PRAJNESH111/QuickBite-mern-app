@@ -38,9 +38,6 @@ export default function Navbar() {
           to="/"
         >
           QuickBite
-          <div className="fs-6 fw-normal" style={{ fontSize: "0.8rem" }}>
-            Inspired by Zomato
-          </div>
         </Link>
 
         <button
