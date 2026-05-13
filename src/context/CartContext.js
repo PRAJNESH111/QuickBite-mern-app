@@ -14,29 +14,43 @@ const reducer = (state, action) => {
           qty: action.qty,
           size: action.size,
           price: action.price,
-          img: action.img,
+          img: action.img || "",
         },
       ];
     case "REMOVE":
-      let newArr = [...state];
-      newArr.splice(action.index, 1);
-      return newArr;
-    case "DROP":
-      let empArray = [];
-      return empArray;
+      return state.filter((_, index) => index !== action.index);
     case "UPDATE":
-      let arr = [...state];
-      arr.find((food, index) => {
-        if (food.id === action.id) {
-          arr[index] = {
+      return state.map((food) => {
+        if (food.id === action.id && food.size === action.size) {
+          return {
             ...food,
             qty: parseInt(action.qty) + food.qty,
             price: action.price + food.price,
           };
         }
-        return arr;
+        return food;
       });
-      return arr;
+    case "INCREMENT":
+      return state.map((food, index) => {
+        if (index === action.index) {
+          const unitPrice = food.price / food.qty;
+          return { ...food, qty: food.qty + 1, price: food.price + unitPrice };
+        }
+        return food;
+      });
+    case "DECREMENT":
+      return state
+        .map((food, index) => {
+          if (index === action.index) {
+            if (food.qty <= 1) return null;
+            const unitPrice = food.price / food.qty;
+            return { ...food, qty: food.qty - 1, price: food.price - unitPrice };
+          }
+          return food;
+        })
+        .filter(Boolean);
+    case "DROP":
+      return [];
     default:
       return state;
   }

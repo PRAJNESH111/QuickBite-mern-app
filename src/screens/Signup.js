@@ -1,78 +1,34 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import { API_URL } from "../config";
-import { Eye, EyeOff } from "lucide-react"; // optional, you can use emojis/icons
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 export default function Signup() {
-  const [credentials, setCredentials] = useState({
-    name: "",
-    email: "",
-    password: "",
-    geolocation: "",
-  });
-  const [address, setAddress] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  let navigate = useNavigate();
-
-  const handleClick = async (e) => {
-    e.preventDefault();
-    let navLocation = () => {
-      return new Promise((res, rej) => {
-        navigator.geolocation.getCurrentPosition(res, rej);
-      });
-    };
-
-    let latlong = await navLocation().then((res) => {
-      let latitude = res.coords.latitude;
-      let longitude = res.coords.longitude;
-      return [latitude, longitude];
-    });
-
-    let [lat, long] = latlong;
-
-    const response = await fetch(`${API_URL}/api/getlocation`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ latlong: { lat, long } }),
-    });
-
-    const { location } = await response.json();
-    setAddress(location);
-    setCredentials({ ...credentials, geolocation: location });
-  };
+  const [credentials, setCredentials] = useState({ name: "", email: "", password: "", location: "" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const locationValue = credentials.geolocation || address;
-    const response = await fetch(`${API_URL}/api/createuser`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: credentials.name,
-        email: credentials.email,
-        password: credentials.password,
-        location: locationValue,
-      }),
-    });
+    setLoading(true);
+    setError("");
 
-    const json = await response.json();
-
-    if (json.success) {
-      localStorage.setItem("token", json.authToken);
-      navigate("/login");
-    } else {
-      if (json.error) {
-        alert(json.error);
-      } else if (json.errors) {
-        alert(json.errors.map((err) => err.msg).join(", "));
+    try {
+      const json = await api.signup(credentials);
+      if (json.success) {
+        // Redirect to login after successful signup
+        navigate("/login", { state: { message: "Account created successfully. Please login." } });
       } else {
-        alert("Enter Valid Credentials");
+        if (json.errors && Array.isArray(json.errors)) {
+          setError(json.errors.join(", "));
+        } else {
+          setError(json.error || "Failed to create account");
+        }
       }
+    } catch (err) {
+      setError("Server error. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,115 +37,88 @@ export default function Signup() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(120deg, #2b0006 0%, #cb202d 55%, #ff5d7d 100%)",
-      }}
-    >
-      <div className="pb-3">
-        <Navbar />
+    <div className="page-container" style={{ paddingTop: 0 }}>
+      <div style={{ position: "absolute", top: 20, left: 24, zIndex: 10 }}>
+        <Link to="/" style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", fontWeight: 800, color: "var(--primary)" }}>
+          🍔 QuickBite
+        </Link>
       </div>
 
-      <div className="container-fluid px-2 px-sm-3 pt-4">
-        <form
-          className="mx-auto mt-5 shadow-soft"
-          onSubmit={handleSubmit}
-          style={{
-            backgroundColor: "rgba(255,255,255,0.96)",
-            borderRadius: "24px",
-            padding: "1.5rem",
-            maxWidth: "500px",
-            width: "100%",
-          }}
-        >
-          <h3 className="text-center text-danger mb-4 fw-bold">Sign Up</h3>
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label text-dark">
-              Name
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              name="name"
-              value={credentials.name}
-              onChange={onChange}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label text-dark">
-              Email address
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              name="email"
-              value={credentials.email}
-              onChange={onChange}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="address" className="form-label text-dark">
-              Address
-            </label>
-            <input
-              type="text"
-              className="form-control"
-              name="address"
-              placeholder="Click below for fetching address"
-              value={address}
-              onChange={(e) => {
-                setAddress(e.target.value);
-                setCredentials({ ...credentials, geolocation: e.target.value });
-              }}
-            />
-          </div>
-          <div className="mb-3">
-            <button
-              type="button"
-              onClick={handleClick}
-              className="btn btn-success w-100"
-            >
-              📍 Get Current Location
-            </button>
-          </div>
-          <div className="mb-3">
-            <label
-              htmlFor="exampleInputPassword1"
-              className="form-label text-dark"
-            >
-              Password
-            </label>
+      <div className="auth-container">
+        <div className="auth-card">
+          <h2 className="auth-title">Create Account</h2>
+          <p className="auth-subtitle">Join us and start ordering today</p>
+
+          {error && (
+            <div className="badge badge-error" style={{ width: "100%", padding: "12px", marginBottom: "20px", fontSize: "0.9rem", display: "block" }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
             <div className="input-group">
+              <label className="input-label">Full Name</label>
               <input
-                type={showPassword ? "text" : "password"}
-                className="form-control"
+                type="text"
+                className="input-field"
+                name="name"
+                value={credentials.name}
+                onChange={onChange}
+                placeholder="John Doe"
+                required
+                minLength={3}
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Email Address</label>
+              <input
+                type="email"
+                className="input-field"
+                name="email"
+                value={credentials.email}
+                onChange={onChange}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Password</label>
+              <input
+                type="password"
+                className="input-field"
+                name="password"
                 value={credentials.password}
                 onChange={onChange}
-                name="password"
+                placeholder="Min. 5 characters"
+                required
+                minLength={5}
               />
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
             </div>
-          </div>
-          <div className="d-grid gap-2 mb-3">
-            <button type="submit" className="btn-zomato">
-              Create Account
+
+            <div className="input-group">
+              <label className="input-label">City / Delivery Area</label>
+              <input
+                type="text"
+                className="input-field"
+                name="location"
+                value={credentials.location}
+                onChange={onChange}
+                placeholder="e.g. New York, NY"
+              />
+            </div>
+
+            <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: "10px", height: "48px" }} disabled={loading}>
+              {loading ? <div className="spinner spinner-sm"></div> : "Sign Up"}
             </button>
+          </form>
+
+          <div style={{ textAlign: "center", marginTop: "32px", fontSize: "0.95rem" }}>
+            <span style={{ color: "var(--text-3)" }}>Already have an account? </span>
+            <Link to="/login" style={{ color: "var(--primary)", fontWeight: 600 }}>Login here</Link>
           </div>
-          <div className="text-center">
-            <p className="text-dark mb-0">Already have an account?</p>
-            <Link to="/login" className="btn btn-outline-danger btn-sm mt-2">
-              Login Here
-            </Link>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

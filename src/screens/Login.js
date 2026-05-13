@@ -1,38 +1,32 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
-import { useNavigate, Link } from "react-router-dom";
-import { API_URL } from "../config";
-import { Eye, EyeOff } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
+
 export default function Login() {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false);
-  let navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch(`${API_URL}/api/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: credentials.email,
-          password: credentials.password,
-        }),
-      });
-      const json = await response.json();
-      if (json.success) {
-        // Save the auth token to local storage and redirect
-        localStorage.setItem("userEmail", credentials.email);
-        localStorage.setItem("token", json.authToken);
+    setLoading(true);
+    setError("");
 
-        navigate("/");
+    try {
+      const json = await api.login(credentials.email, credentials.password);
+      if (json.success) {
+        login(json.authToken, json.userName, json.userRole, json.userEmail || credentials.email);
+        navigate(json.userRole === "admin" ? "/admin" : "/");
       } else {
-        alert("Enter Valid Credentials");
+        setError(json.error || "Invalid credentials");
       }
-    } catch (error) {
-      alert("An error occurred during login. Please try again");
+    } catch (err) {
+      setError("Server error. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,90 +35,65 @@ export default function Login() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(135deg, #320404 0%, #cb202d 45%, #f43157 100%)",
-        color: "#fff",
-      }}
-    >
-      <div className="pb-3">
-        <Navbar />
+    <div className="page-container" style={{ paddingTop: 0 }}>
+      {/* Simple header for auth pages */}
+      <div style={{ position: "absolute", top: 20, left: 24, zIndex: 10 }}>
+        <Link to="/" style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", fontWeight: 800, color: "var(--primary)" }}>
+          🍔 QuickBite
+        </Link>
       </div>
-      <div className="container-fluid px-2 px-sm-3 pt-4">
-        <form
-          className="mx-auto mt-5 shadow-soft"
-          onSubmit={handleSubmit}
-          style={{
-            backgroundColor: "rgba(255,255,255,0.95)",
-            borderRadius: "24px",
-            padding: "1.5rem",
-            maxWidth: "500px",
-            width: "100%",
-          }}
-        >
-          <h3 className="text-center text-danger mb-4 fw-bold">Login</h3>
-          <div className="mb-3">
-            <label
-              htmlFor="exampleInputEmail1"
-              className="form-label text-dark"
-            >
-              Email address
-            </label>
-            <input
-              type="email"
-              className="form-control"
-              name="email"
-              value={credentials.email}
-              onChange={onChange}
-              aria-describedby="emailHelp"
-            />
-            <div id="emailHelp" className="form-text">
-              We'll never share your email with anyone.
+
+      <div className="auth-container">
+        <div className="auth-card">
+          <h2 className="auth-title">Welcome Back</h2>
+          <p className="auth-subtitle">Log in to order your favorite food</p>
+
+          {error && (
+            <div className="badge badge-error" style={{ width: "100%", padding: "12px", marginBottom: "20px", fontSize: "0.9rem", display: "block" }}>
+              {error}
             </div>
-          </div>
-          <div className="mb-3">
-            <label
-              htmlFor="exampleInputPassword1"
-              className="form-label text-dark"
-            >
-              Password
-            </label>
+          )}
+
+          <form onSubmit={handleSubmit}>
             <div className="input-group">
+              <label className="input-label">Email Address</label>
               <input
-                type={showPassword ? "text" : "password"}
-                className="form-control"
+                type="email"
+                className="input-field"
+                name="email"
+                value={credentials.email}
+                onChange={onChange}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <label className="input-label">Password</label>
+              </div>
+              <input
+                type="password"
+                className="input-field"
+                name="password"
                 value={credentials.password}
                 onChange={onChange}
-                name="password"
+                placeholder="••••••••"
+                required
               />
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
             </div>
-          </div>
-          <div className="d-grid gap-2 mb-3">
-            <button type="submit" className="btn-zomato">
-              Login
+
+            <button type="submit" className="btn-primary" style={{ width: "100%", marginTop: "10px", height: "48px" }} disabled={loading}>
+              {loading ? <div className="spinner spinner-sm"></div> : "Login"}
             </button>
+          </form>
+
+          <div style={{ textAlign: "center", marginTop: "32px", fontSize: "0.95rem" }}>
+            <span style={{ color: "var(--text-3)" }}>Don't have an account? </span>
+            <Link to="/signup" style={{ color: "var(--primary)", fontWeight: 600 }}>Create an account</Link>
           </div>
-          <div className="text-center">
-            <p className="text-dark mb-0">Don't have an account?</p>
-            <Link to="/signup" className="btn btn-outline-danger btn-sm mt-2">
-              Create New Account
-            </Link>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );
 }
-
-// , 'Accept': 'application/json',
-//         'Access-Control-Allow-Origin': 'http://localhost:3000/login', 'Access-Control-Allow-Credentials': 'true',
-//         "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",'Access-Control-Allow-Methods': 'PUT, POST, GET, DELETE, OPTIONS'
